@@ -1,15 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const scrapeButton = document.getElementById('scrapeButton');
+    const summarizeButton = document.getElementById('summarizeButton');
+    const analyzeButton = document.getElementById('analyzeButton');
     const urlInput = document.getElementById('youtubeUrl');
     const resultsDiv = document.getElementById('results');
     const commentsBody = document.getElementById('commentsBody');
-
-    // Add a new button for summarization
-    const summarizeButton = document.createElement('button');
-    summarizeButton.textContent = 'Summarize Comments';
-    summarizeButton.id = 'summarizeButton';
-    summarizeButton.style.display = 'none'; // Hide it initially
-    document.querySelector('.input-group').appendChild(summarizeButton);
 
     const API_KEY = 'AIzaSyDvF8PuS9QBmd3Rk6aY9Y1LWcwSvzKLFTI'; // Retrieve API key from environment variable
 
@@ -116,6 +111,94 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function analyzeCommentsWithAI(commentsText) {
+        console.log('Entering analyzeCommentsWithAI function');
+        const canUseAssistant = await ai.assistant.capabilities();
+        console.log('Assistant capabilities:', canUseAssistant);
+        if (canUseAssistant && canUseAssistant.available !== 'no') {
+            let session;
+            try {
+                console.log('Creating assistant session');
+                session = await ai.assistant.create();
+                if (canUseAssistant.available !== 'readily') {
+                    session.addEventListener('downloadprogress', (e) => {
+                        console.log(`Download progress: ${e.loaded}/${e.total}`);
+                    });
+                    console.log('Waiting for assistant to be ready');
+                    await session.ready;
+                }
+
+                console.log('Preparing comments for analysis');
+                const maxCharacters = 4000; // Approximately 1024 tokens
+                if (commentsText.length > maxCharacters) {
+                    console.warn('Input text is too long, truncating to 4000 characters');
+                    commentsText = commentsText.slice(0, maxCharacters);
+                }
+                
+                console.log('Sample of comments:', commentsText.slice(0, 500) + '...');
+                console.log('Calling assistant.prompt');
+                const result = await session.prompt(
+                    "Analyze the text and segregate pointwise into Complaints, Pain Points, User Requests, and Other insights. For each category, provide a bullet-point list of the main points. If a category doesn't have any relevant points, you can omit it.\n\n" + commentsText
+                );
+                console.log('Analysis result:', result);
+                return result;
+            } catch (error) {
+                console.error('Error in analyzeCommentsWithAI function:', error);
+                throw error;
+            } finally {
+                if (session) {
+                    console.log('Destroying assistant session');
+                    session.destroy();
+                }
+            }
+        } else {
+            console.error('Assistant is not available');
+            throw new Error('Assistant is not available');
+        }
+    }
+
+    function displayAnalysis(analysis) {
+        const analysisContainer = document.createElement('div');
+        analysisContainer.className = 'analysis-container';
+        
+        const analysisTitle = document.createElement('h2');
+        analysisTitle.className = 'analysis-title';
+        analysisTitle.textContent = 'AI Analysis of Comments:';
+        analysisContainer.appendChild(analysisTitle);
+        
+        if (!analysis || analysis.trim() === '') {
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'text-danger';
+            errorMessage.textContent = 'No analysis generated. The AI might not have produced any output.';
+            analysisContainer.appendChild(errorMessage);
+        } else {
+            const categories = ['Complaints', 'Pain Points', 'User Requests', 'Other insights'];
+            categories.forEach(category => {
+                const categoryRegex = new RegExp(`${category}:([\\s\\S]*?)(?=(${categories.join('|')}:|$))`, 'i');
+                const match = analysis.match(categoryRegex);
+                if (match && match[1].trim()) {
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.className = 'category-title';
+                    categoryTitle.textContent = category;
+                    analysisContainer.appendChild(categoryTitle);
+
+                    const bulletList = document.createElement('ul');
+                    bulletList.className = 'analysis-list';
+                    const points = match[1].split('•').filter(point => point.trim());
+                    points.forEach(point => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'analysis-item';
+                        listItem.textContent = point.trim();
+                        bulletList.appendChild(listItem);
+                    });
+                    analysisContainer.appendChild(bulletList);
+                }
+            });
+        }
+        
+        resultsDiv.appendChild(analysisContainer);
+    }
+
     scrapeButton.addEventListener('click', async function() {
         const url = urlInput.value.trim();
         if (url === '') {
@@ -133,7 +216,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const commentsData = await fetchComments(videoId);
                 resultsDiv.innerHTML += '<p class="text-success">Comments fetched successfully.</p>';
                 displayComments(commentsData);
-                summarizeButton.style.display = 'block'; // Show the summarize button
+                summarizeButton.style.display = 'inline-block'; // Show the summarize button
+                analyzeButton.style.display = 'inline-block'; // Show the analyze button
             } catch (error) {
                 resultsDiv.innerHTML += `<p class="text-danger">Error fetching comments: ${error.message}</p>`;
             }
@@ -226,6 +310,46 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error in summarization process:', error);
             resultsDiv.innerHTML = `<p class="text-danger">Error summarizing comments: ${error.message}</p>`;
             // Add more detailed error information
+            const errorDetails = document.createElement('pre');
+            errorDetails.textContent = JSON.stringify(error, null, 2);
+            resultsDiv.appendChild(errorDetails);
+        }
+    });
+
+    analyzeButton.addEventListener('click', async function() {
+        try {
+            console.log('Analyze button clicked');
+            const comments = Array.from(commentsBody.querySelectorAll('tr'))
+                .map(row => ({
+                    snippet: {
+                        topLevelComment: {
+                            snippet: {
+                                textDisplay: row.querySelector('td:nth-child(2)').textContent,
+                                likeCount: parseInt(row.querySelector('td:nth-child(3)').textContent, 10)
+                            }
+                        }
+                    }
+                }))
+                .sort((a, b) => b.snippet.topLevelComment.snippet.likeCount - a.snippet.topLevelComment.snippet.likeCount)
+                .slice(0, 30);
+
+            console.log('Number of comments to analyze:', comments.length);
+            console.log('First comment:', comments[0]);
+
+            resultsDiv.innerHTML = '<p class="text-info">Analyzing top 30 most-liked comments...</p>';
+            const commentsText = comments.map(comment => comment.snippet.topLevelComment.snippet.textDisplay).join('\n');
+            console.log('Before calling analyzeCommentsWithAI');
+            const analysis = await analyzeCommentsWithAI(commentsText);
+            console.log('After calling analyzeCommentsWithAI');
+            console.log('Generated analysis:', analysis);
+
+            displayAnalysis(analysis);
+
+            console.log('Analysis added to resultsDiv');
+
+        } catch (error) {
+            console.error('Error in analysis process:', error);
+            resultsDiv.innerHTML = `<p class="text-danger">Error analyzing comments: ${error.message}</p>`;
             const errorDetails = document.createElement('pre');
             errorDetails.textContent = JSON.stringify(error, null, 2);
             resultsDiv.appendChild(errorDetails);

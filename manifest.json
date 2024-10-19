@@ -3,7 +3,7 @@
   "name": "YouTube Comment Scraper and Summarizer",
   "version": "1.0",
   "description": "Scrape, analyze, and summarize YouTube comments",
-  "permissions": ["activeTab", "ai.summarizer"],
+  "permissions": ["activeTab", "ai.summarizer", "ai.assistant"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
