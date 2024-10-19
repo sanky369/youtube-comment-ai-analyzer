@@ -1,0 +1,206 @@
+:root {
+  --primary-color: #ff0000;
+  --secondary-color: #282828;
+  --text-color: #333;
+  --background-color: #f9f9f9;
+  --border-color: #e0e0e0;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  width: 400px;
+  margin: 0;
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+header {
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+}
+
+header p {
+  font-size: 14px;
+  color: var(--secondary-color);
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #cc0000;
+}
+
+.results {
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #e8e8e8;
+}
+
+.comments-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.text-success {
+  color: #28a745;
+}
+
+/* Remove or comment out the following styles */
+/*
+.summary-container {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  display: block;
+  width: 100%;
+}
+*/
+
+.summary-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.category-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--secondary-color);
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.summary-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+.summary-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.summary-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Ensure the results div is visible */
+#results {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  max-height: none; /* Remove any height restriction */
+  overflow-y: visible; /* Allow content to expand */
+}
+
+/* Style for the loading message */
+.text-info {
+  color: #17a2b8;
+  font-weight: bold;
+}
+
+.comments-summary {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  max-height: none; /* Remove any height restriction */
+  overflow-y: visible; /* Allow content to expand */
+}
+
+.comments-summary .summary-title {
+  font-size: 16px;
+}
+
+.comments-summary .category-title {
+  font-size: 14px;
+}
+
+.comments-summary .summary-item {
+  font-size: 12px;
+}
+
+/* Add styles for better visibility of summary content */
+.summary-list {
+  margin-left: 20px;
+}
+
+.summary-item {
+  margin-bottom: 10px;
+}

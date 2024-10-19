@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Comment Scraper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>YouTube Comment Scraper</h1>
+            <p>Enter a YouTube URL to scrape comments</p>
+        </header>
+        <main>
+            <div class="input-group">
+                <input type="text" id="youtubeUrl" placeholder="Enter YouTube URL">
+                <button id="scrapeButton">Scrape Comments</button>
+                <button id="summarizeButton" style="display: none;">Summarize Comments</button>
+            </div>
+            <div id="results" class="results"></div>
+            <div id="commentsTable" class="comments-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Comment</th>
+                            <th>Likes</th>
+                            <th>Replies</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commentsBody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
