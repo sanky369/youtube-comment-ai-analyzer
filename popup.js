@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     summarizeButton.style.display = 'none'; // Hide it initially
     document.querySelector('.input-group').appendChild(summarizeButton);
 
-    const API_KEY = process.env.YOUTUBE_API_KEY; // Retrieve API key from environment variable
+    const API_KEY = 'AIzaSyDvF8PuS9QBmd3Rk6aY9Y1LWcwSvzKLFTI'; // Retrieve API key from environment variable
 
     async function fetchComments(videoId) {
         const apiUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${API_KEY}&maxResults=100`;
@@ -96,7 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 console.log('Sample of comments:', commentsText.slice(0, 500) + '...');
                 console.log('Calling summarizer.summarize');
-                const result = await summarizer.summarize(commentsText);
+                const result = await summarizer.summarize(commentsText, {
+                    prompt: "Summarize the following YouTube comments into these categories: Complaints, Pain Points, User Requests, and Insights. For each category, provide a bullet-point list of the main points. If a category doesn't have any relevant points, you can omit it."
+                });
                 console.log('Summarization result:', result);
                 return result;
             } catch (error) {
