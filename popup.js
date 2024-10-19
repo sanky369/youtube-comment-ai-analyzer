@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Get references to DOM elements
     const scrapeButton = document.getElementById('scrapeButton');
     const summarizeButton = document.getElementById('summarizeButton');
     const analyzeButton = document.getElementById('analyzeButton');
@@ -6,8 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsDiv = document.getElementById('results');
     const commentsBody = document.getElementById('commentsBody');
 
+    // API key for YouTube Data API
     const API_KEY = 'AIzaSyDvF8PuS9QBmd3Rk6aY9Y1LWcwSvzKLFTI'; // Retrieve API key from environment variable
 
+    // Function to fetch comments from YouTube API
     async function fetchComments(videoId) {
         const apiUrl = `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&videoId=${videoId}&key=${API_KEY}&maxResults=100`;
 
@@ -25,26 +28,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to extract video ID from YouTube URL
     function extractVideoId(url) {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
         if (match && match[2].length === 11) {
-            return match[2];
+            return match[2]; // Return the video ID
         } else {
             console.error('Error: Invalid YouTube URL', url);
-            return null;
+            return null; // Return null if URL is invalid
         }
     }
 
+    // Function to display comments in the results section
     function displayComments(commentsData) {
-        const commentsBody = document.getElementById('commentsBody');
-        commentsBody.innerHTML = '';
+        commentsBody.innerHTML = ''; // Clear existing comments
 
         // Sort comments by like count in descending order
         const sortedComments = commentsData.items.sort((a, b) => 
             b.snippet.topLevelComment.snippet.likeCount - a.snippet.topLevelComment.snippet.likeCount
         );
 
+        // Create a table row for each comment
         sortedComments.forEach(item => {
             const comment = item.snippet.topLevelComment.snippet;
             const row = document.createElement('tr');
@@ -57,10 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${new Date(comment.publishedAt).toLocaleString()}</td>
             `;
 
-            commentsBody.appendChild(row);
+            commentsBody.appendChild(row); // Append the row to the comments body
         });
     }
 
+    // Function to summarize comments using AI
     async function summarizeComments(comments) {
         console.log('Entering summarizeComments function');
         const canSummarize = await ai.summarizer.capabilities();
@@ -75,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log(`Download progress: ${e.loaded}/${e.total}`);
                     });
                     console.log('Waiting for summarizer to be ready');
-                    await summarizer.ready;
+                    await summarizer.ready; // Wait for the summarizer to be ready
                 }
 
                 console.log('Preparing comments for summarization');
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const maxCharacters = 4000; // Approximately 1024 tokens
                 if (commentsText.length > maxCharacters) {
                     console.warn('Input text is too long, truncating to 4000 characters');
-                    commentsText = commentsText.slice(0, maxCharacters);
+                    commentsText = commentsText.slice(0, maxCharacters); // Truncate if too long
                 }
                 
                 console.log('Sample of comments:', commentsText.slice(0, 500) + '...');
@@ -95,14 +101,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     prompt: "Summarize the following YouTube comments into these categories: Complaints, Pain Points, User Requests, and Insights. For each category, provide a bullet-point list of the main points. If a category doesn't have any relevant points, you can omit it."
                 });
                 console.log('Summarization result:', result);
-                return result;
+                return result; // Return the summary result
             } catch (error) {
                 console.error('Error in summarizeComments function:', error);
                 throw error;
             } finally {
                 if (summarizer) {
                     console.log('Destroying summarizer');
-                    summarizer.destroy();
+                    summarizer.destroy(); // Clean up the summarizer
                 }
             }
         } else {
@@ -111,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to analyze comments using AI
     async function analyzeCommentsWithAI(commentsText) {
         console.log('Entering analyzeCommentsWithAI function');
         const canUseAssistant = await ai.assistant.capabilities();
@@ -125,14 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log(`Download progress: ${e.loaded}/${e.total}`);
                     });
                     console.log('Waiting for assistant to be ready');
-                    await session.ready;
+                    await session.ready; // Wait for the assistant to be ready
                 }
 
                 console.log('Preparing comments for analysis');
                 const maxCharacters = 4000; // Approximately 1024 tokens
                 if (commentsText.length > maxCharacters) {
                     console.warn('Input text is too long, truncating to 4000 characters');
-                    commentsText = commentsText.slice(0, maxCharacters);
+                    commentsText = commentsText.slice(0, maxCharacters); // Truncate if too long
                 }
                 
                 console.log('Sample of comments:', commentsText.slice(0, 500) + '...');
@@ -141,14 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     "Analyze the text and segregate pointwise into Complaints, Pain Points, User Requests, and Other insights. For each category, provide a bullet-point list of the main points. If a category doesn't have any relevant points, you can omit it.\n\n" + commentsText
                 );
                 console.log('Analysis result:', result);
-                return result;
+                return result; // Return the analysis result
             } catch (error) {
                 console.error('Error in analyzeCommentsWithAI function:', error);
                 throw error;
             } finally {
                 if (session) {
                     console.log('Destroying assistant session');
-                    session.destroy();
+                    session.destroy(); // Clean up the assistant session
                 }
             }
         } else {
@@ -157,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Function to display the analysis results
     function displayAnalysis(analysis) {
         const analysisContainer = document.createElement('div');
         analysisContainer.className = 'analysis-container';
@@ -196,15 +204,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        resultsDiv.appendChild(analysisContainer);
+        resultsDiv.appendChild(analysisContainer); // Append the analysis to the results div
     }
 
+    // Event listener for the scrape button
     scrapeButton.addEventListener('click', async function() {
         const url = urlInput.value.trim();
         if (url === '') {
             resultsDiv.innerHTML = '<p class="text-danger">Please enter a YouTube URL.</p>';
             console.error('Error: No URL entered');
-            return;
+            return; // Exit if no URL is entered
         }
 
         const videoId = extractVideoId(url);
@@ -215,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const commentsData = await fetchComments(videoId);
                 resultsDiv.innerHTML += '<p class="text-success">Comments fetched successfully.</p>';
-                displayComments(commentsData);
+                displayComments(commentsData); // Display fetched comments
                 summarizeButton.style.display = 'inline-block'; // Show the summarize button
                 analyzeButton.style.display = 'inline-block'; // Show the analyze button
             } catch (error) {
@@ -226,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listener for the summarize button
     summarizeButton.addEventListener('click', async function() {
         try {
             console.log('Summarize button clicked');
@@ -241,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }))
                 .sort((a, b) => b.snippet.topLevelComment.snippet.likeCount - a.snippet.topLevelComment.snippet.likeCount)
-                .slice(0, 30);
+                .slice(0, 30); // Get top 30 most liked comments
 
             console.log('Number of comments to summarize:', comments.length);
             console.log('First comment:', comments[0]);
@@ -316,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listener for the analyze button
     analyzeButton.addEventListener('click', async function() {
         try {
             console.log('Analyze button clicked');
@@ -331,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }))
                 .sort((a, b) => b.snippet.topLevelComment.snippet.likeCount - a.snippet.topLevelComment.snippet.likeCount)
-                .slice(0, 30);
+                .slice(0, 30); // Get top 30 most liked comments
 
             console.log('Number of comments to analyze:', comments.length);
             console.log('First comment:', comments[0]);
@@ -343,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('After calling analyzeCommentsWithAI');
             console.log('Generated analysis:', analysis);
 
-            displayAnalysis(analysis);
+            displayAnalysis(analysis); // Display the analysis results
 
             console.log('Analysis added to resultsDiv');
 
