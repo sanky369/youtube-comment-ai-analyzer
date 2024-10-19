@@ -286,28 +286,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 summaryContainer.appendChild(summaryText);
 
                 // Split the summary into categories
-                const categories = ['Complaints', 'Pain Points', 'User Requests', 'Insights'];
-                categories.forEach(category => {
-                    const categoryRegex = new RegExp(`${category}:([\\s\\S]*?)(?=(${categories.join('|')}:|$))`, 'i');
-                    const match = summary.match(categoryRegex);
-                    if (match && match[1].trim()) {
-                        const categoryTitle = document.createElement('h3');
-                        categoryTitle.className = 'category-title';
-                        categoryTitle.textContent = category;
-                        summaryContainer.appendChild(categoryTitle);
-
-                        const bulletList = document.createElement('ul');
-                        bulletList.className = 'summary-list';
-                        const points = match[1].split('•').filter(point => point.trim());
-                        points.forEach(point => {
-                            const listItem = document.createElement('li');
-                            listItem.className = 'summary-item';
-                            listItem.textContent = point.trim();
-                            bulletList.appendChild(listItem);
-                        });
-                        summaryContainer.appendChild(bulletList);
-                    }
-                });
+                // const categories = ['Complaints', 'Pain Points', 'User Requests', 'Insights'];
+                // categories.forEach(category => {
+                //     const categoryRegex = new RegExp(`${category}:([\\s\\S]*?)(?=(${categories.join('|')}:|$))`, 'i');
+                //     const match = summary.match(categoryRegex);
+                //     if (match && match[1].trim()) {
+                //         const categoryTitle = document.createElement('h3');
+                //         categoryTitle.className = 'category-title';
+                //         categoryTitle.textContent = category;
+                //         summaryContainer.appendChild(categoryTitle);
+                //
+                //         const bulletList = document.createElement('ul');
+                //         bulletList.className = 'summary-list';
+                //         const points = match[1].split('•').filter(point => point.trim());
+                //         points.forEach(point => {
+                //             const listItem = document.createElement('li');
+                //             listItem.className = 'summary-item';
+                //             listItem.textContent = point.trim();
+                //             bulletList.appendChild(listItem);
+                //         });
+                //         summaryContainer.appendChild(bulletList);
+                //     }
+                // });
             }
             
             // Clear previous results and add the new summary container
