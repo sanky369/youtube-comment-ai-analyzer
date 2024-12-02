@@ -285,3 +285,34 @@ tr:nth-child(even) {
   flex: 1;
   white-space: nowrap;
 }
+
+.category-title {
+    color: var(--primary-color);
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.summary-list,
+.analysis-list {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.summary-item,
+.analysis-item {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    color: var(--text-color);
+}
+
+.summary-item::before,
+.analysis-item::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+}

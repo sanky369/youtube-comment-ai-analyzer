@@ -180,31 +180,63 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessage.textContent = 'No analysis generated. The AI might not have produced any output.';
             analysisContainer.appendChild(errorMessage);
         } else {
-            const categories = ['Complaints', 'Pain Points', 'User Requests', 'Other insights'];
-            categories.forEach(category => {
-                const categoryRegex = new RegExp(`${category}:([\\s\\S]*?)(?=(${categories.join('|')}:|$))`, 'i');
-                const match = analysis.match(categoryRegex);
-                if (match && match[1].trim()) {
-                    const categoryTitle = document.createElement('h3');
-                    categoryTitle.className = 'category-title';
-                    categoryTitle.textContent = category;
-                    analysisContainer.appendChild(categoryTitle);
+            try {
+                // Format and structure the analysis text
+                const sections = analysis.split(/(?=Complaints:|Pain Points:|User Requests:|Other insights:)/g);
+                
+                sections.forEach(section => {
+                    if (section.trim()) {
+                        const titleMatch = section.match(/^(.*?):/);
+                        if (titleMatch) {
+                            // Create section title
+                            const sectionTitle = document.createElement('h3');
+                            sectionTitle.className = 'category-title';
+                            sectionTitle.textContent = titleMatch[1].trim();
+                            analysisContainer.appendChild(sectionTitle);
 
-                    const bulletList = document.createElement('ul');
-                    bulletList.className = 'analysis-list';
-                    const points = match[1].split('•').filter(point => point.trim());
-                    points.forEach(point => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'analysis-item';
-                        listItem.textContent = point.trim();
-                        bulletList.appendChild(listItem);
-                    });
-                    analysisContainer.appendChild(bulletList);
+                            // Get content after the title
+                            let content = section.replace(titleMatch[0], '').trim();
+                            
+                            // Split content into bullet points
+                            let points = content
+                                .split(/[\n•*-]/)
+                                .map(point => point.trim())
+                                .filter(point => point.length > 0);
+
+                            if (points.length > 0) {
+                                const bulletList = document.createElement('ul');
+                                bulletList.className = 'analysis-list';
+                                
+                                points.forEach(point => {
+                                    const listItem = document.createElement('li');
+                                    listItem.className = 'analysis-item';
+                                    listItem.textContent = point;
+                                    bulletList.appendChild(listItem);
+                                });
+                                
+                                analysisContainer.appendChild(bulletList);
+                            }
+                        }
+                    }
+                });
+
+                // If no sections were created, display the raw text
+                if (analysisContainer.children.length <= 1) {
+                    const rawText = document.createElement('p');
+                    rawText.textContent = analysis;
+                    analysisContainer.appendChild(rawText);
                 }
-            });
+            } catch (error) {
+                console.error('Error formatting analysis:', error);
+                const rawText = document.createElement('p');
+                rawText.textContent = analysis;
+                analysisContainer.appendChild(rawText);
+            }
         }
-        
-        resultsDiv.appendChild(analysisContainer); // Append the analysis to the results div
+
+        // Clear previous results and add the new analysis container
+        resultsDiv.innerHTML = '';
+        resultsDiv.appendChild(analysisContainer);
     }
 
     // Event listener for the scrape button
@@ -280,34 +312,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 summaryContainer.appendChild(errorMessage);
             } else {
                 console.log('Processing summary');
-                // Add the full summary text as a paragraph
-                const summaryText = document.createElement('p');
-                summaryText.textContent = summary;
-                summaryContainer.appendChild(summaryText);
+                // Format and structure the summary text
+                const sections = summary.split(/(?=Complaints:|Pain Points:|User Requests:|Insights:)/g);
+                
+                sections.forEach(section => {
+                    if (section.trim()) {
+                        const titleMatch = section.match(/^(.*?):/);
+                        if (titleMatch) {
+                            const sectionTitle = document.createElement('h3');
+                            sectionTitle.className = 'category-title';
+                            sectionTitle.textContent = titleMatch[1];
+                            summaryContainer.appendChild(sectionTitle);
 
-                // Split the summary into categories
-                // const categories = ['Complaints', 'Pain Points', 'User Requests', 'Insights'];
-                // categories.forEach(category => {
-                //     const categoryRegex = new RegExp(`${category}:([\\s\\S]*?)(?=(${categories.join('|')}:|$))`, 'i');
-                //     const match = summary.match(categoryRegex);
-                //     if (match && match[1].trim()) {
-                //         const categoryTitle = document.createElement('h3');
-                //         categoryTitle.className = 'category-title';
-                //         categoryTitle.textContent = category;
-                //         summaryContainer.appendChild(categoryTitle);
-                //
-                //         const bulletList = document.createElement('ul');
-                //         bulletList.className = 'summary-list';
-                //         const points = match[1].split('•').filter(point => point.trim());
-                //         points.forEach(point => {
-                //             const listItem = document.createElement('li');
-                //             listItem.className = 'summary-item';
-                //             listItem.textContent = point.trim();
-                //             bulletList.appendChild(listItem);
-                //         });
-                //         summaryContainer.appendChild(bulletList);
-                //     }
-                // });
+                            const content = section.replace(titleMatch[0], '').trim();
+                            const points = content.split(/[•*-]\s+/).filter(point => point.trim());
+                            
+                            const bulletList = document.createElement('ul');
+                            bulletList.className = 'summary-list';
+                            
+                            points.forEach(point => {
+                                if (point.trim()) {
+                                    const listItem = document.createElement('li');
+                                    listItem.className = 'summary-item';
+                                    listItem.textContent = point.trim();
+                                    bulletList.appendChild(listItem);
+                                }
+                            });
+                            
+                            summaryContainer.appendChild(bulletList);
+                        }
+                    }
+                });
             }
             
             // Clear previous results and add the new summary container
