@@ -36,7 +36,7 @@ CommentScope is a Chrome extension that allows users to scrape, analyze, and sum
 
 ## API Key
 
-Create a .env file and add your YouTube Data API key (YOUTUBE_API_KEY=YOUR_API_KEY).
+Update config.json to add your YouTube Data API key (YOUTUBE_API_KEY=YOUR_API_KEY).
 
 ## License
 
