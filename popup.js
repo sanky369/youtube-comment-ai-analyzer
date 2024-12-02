@@ -7,8 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsDiv = document.getElementById('results');
     const commentsBody = document.getElementById('commentsBody');
 
-    // API key for YouTube Data API
-    const API_KEY = 'AIzaSyDvF8PuS9QBmd3Rk6aY9Y1LWcwSvzKLFTI'; // Retrieve API key from environment variable
+    let API_KEY;
+    fetch(chrome.runtime.getURL('config.json'))
+      .then(response => response.json())
+      .then(config => {
+        API_KEY = config.youtube_api_key;
+      });
 
     // Function to fetch comments from YouTube API
     async function fetchComments(videoId) {
