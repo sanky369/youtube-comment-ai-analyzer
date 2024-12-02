@@ -1,24 +1,39 @@
 :root {
   --primary-color: #ff0000;
-  --secondary-color: #282828;
-  --text-color: #333;
-  --background-color: #f9f9f9;
-  --border-color: #e0e0e0;
+  --secondary-color: #202020;
+  --text-color: #ffffff;
+  --background-color: #0f0f0f;
+  --border-color: #303030;
+  --table-alternate-bg: #181818;
+  --input-bg: #121212;
 }
 
 body {
   font-family: "Roboto", sans-serif;
-  width: 400px;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  height: 100vh;
+  overflow-y: hidden;
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
 .container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 400px;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 header {
@@ -33,20 +48,29 @@ h1 {
 
 header p {
   font-size: 14px;
-  color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .input-group {
   display: flex;
   gap: 10px;
+  width: 100%;
 }
 
 input[type="text"] {
   flex-grow: 1;
+  min-width: 0;
   padding: 10px;
-  border: 1px solid var(--border-color);
+  border: 2px solid #ffffff;
   border-radius: 4px;
   font-size: 14px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+input[type="text"]:focus {
+  border: 2px solid #ff0000;
+  outline: none;
 }
 
 button {
@@ -62,18 +86,22 @@ button {
 }
 
 button:hover {
-  background-color: #cc0000;
+  background-color: #d90000;
 }
 
 .results {
   font-size: 14px;
   padding: 10px;
   border-radius: 4px;
-  background-color: #e8e8e8;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .comments-table {
+  flex: 1;
+  overflow-y: auto;
   overflow-x: auto;
+  width: 100%;
 }
 
 table {
@@ -87,23 +115,25 @@ td {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 th {
   background-color: var(--secondary-color);
-  color: white;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--border-color);
 }
 
 tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: var(--table-alternate-bg);
 }
 
 .text-danger {
-  color: #dc3545;
+  color: #e74c3c;
 }
 
 .text-success {
-  color: #28a745;
+  color: #2ecc71;
 }
 
 /* Remove or comment out the following styles */
@@ -170,15 +200,15 @@ tr:nth-child(even) {
 
 /* Style for the loading message */
 .text-info {
-  color: #17a2b8;
+  color: #00b3ff;
   font-weight: bold;
 }
 
 .comments-summary {
   margin-top: 20px;
   padding: 15px;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   max-height: none; /* Remove any height restriction */
   overflow-y: visible; /* Allow content to expand */
@@ -206,12 +236,12 @@ tr:nth-child(even) {
 }
 
 .analysis-container {
-  background-color: #ffffff;
-  border: 1px solid #e9ecef;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 20px;
   margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .analysis-title {
@@ -247,9 +277,11 @@ tr:nth-child(even) {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  width: 100%;
+  gap: 10px;
 }
 
 .action-buttons button {
   flex: 1;
-  margin: 0 5px;
+  white-space: nowrap;
 }

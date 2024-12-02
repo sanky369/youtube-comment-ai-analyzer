@@ -120,13 +120,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to analyze comments using AI
     async function analyzeCommentsWithAI(commentsText) {
         console.log('Entering analyzeCommentsWithAI function');
-        const canUseAssistant = await ai.assistant.capabilities();
+        const canUseAssistant = await ai.languageModel.capabilities();
         console.log('Assistant capabilities:', canUseAssistant);
         if (canUseAssistant && canUseAssistant.available !== 'no') {
             let session;
             try {
                 console.log('Creating assistant session');
-                session = await ai.assistant.create();
+                session = await ai.languageModel.create();
                 if (canUseAssistant.available !== 'readily') {
                     session.addEventListener('downloadprogress', (e) => {
                         console.log(`Download progress: ${e.loaded}/${e.total}`);

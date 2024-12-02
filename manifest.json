@@ -1,11 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Comment Scraper and Summarizer",
+  "name": "CommentScope",
   "version": "1.0",
   "description": "Scrape, analyze, and summarize YouTube comments",
-  "permissions": ["activeTab", "ai.summarizer", "ai.assistant"],
+  "permissions": [
+    "activeTab",
+    "ai.summarizer",
+    "ai.languageModel",
+    "sidePanel"
+  ],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",
@@ -17,10 +24,7 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "css": ["styles.css"]
-    }
-  ]
+  "background": {
+    "service_worker": "background.js"
+  }
 }
