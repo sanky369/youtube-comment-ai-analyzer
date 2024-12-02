@@ -286,78 +286,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 .slice(0, 30); // Get top 30 most liked comments
 
             console.log('Number of comments to summarize:', comments.length);
-            console.log('First comment:', comments[0]);
-
             resultsDiv.innerHTML = '<p class="text-info">Summarizing top 30 most-liked comments...</p>';
-            console.log('Before calling summarizeComments');
             const summary = await summarizeComments(comments);
-            console.log('After calling summarizeComments');
-            console.log('Generated summary:', summary);
+            console.log('Generated summary:', summary); // Log the raw summary
 
             // Create a new container for the summary
             const summaryContainer = document.createElement('div');
             summaryContainer.className = 'summary-container';
-            
+
             // Add the title
             const summaryTitle = document.createElement('h2');
             summaryTitle.className = 'summary-title';
             summaryTitle.textContent = 'Summary of top 30 most-liked comments:';
             summaryContainer.appendChild(summaryTitle);
-            
+
             if (!summary || summary.trim() === '') {
-                console.log('Summary is empty or undefined');
                 const errorMessage = document.createElement('p');
                 errorMessage.className = 'text-danger';
                 errorMessage.textContent = 'No summary generated. The AI might not have produced any output.';
                 summaryContainer.appendChild(errorMessage);
             } else {
-                console.log('Processing summary');
-                // Format and structure the summary text
-                const sections = summary.split(/(?=Complaints:|Pain Points:|User Requests:|Insights:)/g);
-                
-                sections.forEach(section => {
-                    if (section.trim()) {
-                        const titleMatch = section.match(/^(.*?):/);
-                        if (titleMatch) {
-                            const sectionTitle = document.createElement('h3');
-                            sectionTitle.className = 'category-title';
-                            sectionTitle.textContent = titleMatch[1];
-                            summaryContainer.appendChild(sectionTitle);
-
-                            const content = section.replace(titleMatch[0], '').trim();
-                            const points = content.split(/[•*-]\s+/).filter(point => point.trim());
-                            
-                            const bulletList = document.createElement('ul');
-                            bulletList.className = 'summary-list';
-                            
-                            points.forEach(point => {
-                                if (point.trim()) {
-                                    const listItem = document.createElement('li');
-                                    listItem.className = 'summary-item';
-                                    listItem.textContent = point.trim();
-                                    bulletList.appendChild(listItem);
-                                }
-                            });
-                            
-                            summaryContainer.appendChild(bulletList);
-                        }
-                    }
-                });
+                // Display the raw summary directly
+                const rawSummary = document.createElement('p');
+                rawSummary.textContent = summary; // Show the raw summary
+                summaryContainer.appendChild(rawSummary);
             }
-            
+
             // Clear previous results and add the new summary container
             resultsDiv.innerHTML = '';
             resultsDiv.appendChild(summaryContainer);
-
             console.log('Summary added to resultsDiv');
 
         } catch (error) {
             console.error('Error in summarization process:', error);
             resultsDiv.innerHTML = `<p class="text-danger">Error summarizing comments: ${error.message}</p>`;
-            // Add more detailed error information
-            const errorDetails = document.createElement('pre');
-            errorDetails.textContent = JSON.stringify(error, null, 2);
-            resultsDiv.appendChild(errorDetails);
         }
     });
 
